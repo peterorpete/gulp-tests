@@ -275,7 +275,7 @@ var gulp = require('gulp'),
     concatJS = require('gulp-concat'),
     jshint = require('gulp-jshint');
 </pre>
-3. Make th Js gulp task wait on lint-js before starting
+3. Make the exisiting Js gulp task wait on lint-js before starting
 <pre>
 gulp.task('js', ['lint-js'], function() {
 </pre>
