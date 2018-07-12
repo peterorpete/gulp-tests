@@ -203,7 +203,7 @@ gulp.task('sass', function() {
 
 </pre>
 
-##How to concatenate and minify javascript files
+## How to concatenate and minify javascript files
 
 1. ***npm install gulp-uglify gulp-concat --save-dev***
 
