@@ -15,7 +15,8 @@ var gulp = require('gulp'),
     autoprefixer = require('gulp-autoprefixer'),
     inlineCss = require('gulp-inline-css'),
     minifyJS = require('gulp-uglify'),
-    concatJS = require('gulp-concat');
+    concatJS = require('gulp-concat'),
+    jshint = require('gulp-jshint');
 
 /* =======================
 Regular tasks
@@ -90,13 +91,26 @@ gulp.task('sass', function() {
 // 2. add all js files together and make a single file called scripts.js
 // 3. minify js
 // 4. put minified js in dist js folder. 
-gulp.task('js', function() {
+gulp.task('js', ['lint-js'], function() {
     return gulp
         .src('src/js/lib/**/*.js')
         .pipe(concatJS('scripts.js'))
         .pipe(minifyJS())
         .pipe(gulp.dest('dist/js'));
 
+});
+
+// Check javascruipt for errors
+// 1. scan all js
+// 2. Use jshint on it
+// 3. COnvert the reporter to a nice clear reporter
+// 4. End task
+gulp.task('lint-js', function() {
+    return gulp
+        .src('src/js/lib/**/*.js')
+        .pipe(jshint())
+        .pipe(jshint.reporter('jshint-stylish'))
+        .pipe(jshint.reporter('fail')); //task fails on JSHINT error
 });
 
 /* =======================

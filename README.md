@@ -259,3 +259,49 @@ gulp.task('watch-js', ['js'], function(done) {
 </pre>
 
 7. **gulp** to test, make sure you have js files in src/lib to test.
+
+## How to Check JavaScript Files for Errors
+
+1. **npm install gulp-jshint --save-dev**
+2. **npm install jshint --save-dev**
+3. Load plugin
+<pre>
+var gulp = require('gulp'),
+    browser = require('browser-sync').create(),
+    sass = require('gulp-sass'),
+    autoprefixer = require('gulp-autoprefixer'),
+    inlineCss = require('gulp-inline-css'),
+    minifyJS = require('gulp-uglify'),
+    concatJS = require('gulp-concat'),
+    jshint = require('gulp-jshint');
+</pre>
+3. Make th Js gulp task wait on lint-js before starting
+<pre>
+gulp.task('js', ['lint-js'], function() {
+</pre>
+4. Make lint-js task
+<pre>
+// Check javascruipt for errors
+
+gulp.task('lint-js', function() {
+    return gulp
+        .src('src/js/lib/**/*.js')
+        .pipe(jshint());
+});
+</pre>
+5. Install a node module to make error messages pretty **npm install jshint-stylish**
+6. Adjust the lint-js task
+<pre>
+// Check javascruipt for errors
+// 1. scan all js
+// 2. Use jshint on it
+// 3. COnvert the reporter to a nice clear reporter
+// 4. End task
+gulp.task('lint-js', function() {
+    return gulp
+        .src('src/js/lib/**/*.js')
+        .pipe(jshint())
+        .pipe(jshint.reporter('jshint-stylish'))
+        .pipe(jshint.reporter('fail')); //task fails on JSHINT error
+});
+</pre>
