@@ -305,3 +305,26 @@ gulp.task('lint-js', function() {
         .pipe(jshint.reporter('fail')); //task fails on JSHINT error
 });
 </pre>
+
+
+
+## How to compress and optimize images
+
+1. npm install gulp-imagemin --save-dev
+2. Load plugin
+<pre>
+    imagemin = require('gulp-imagemin');
+</pre>
+3. Create gulp task
+<pre>
+// Compresses images
+gulp.task('img', function() {
+    return gulp
+        .src('src/img/**/*.{png,jpg,gif,svg,ico}')
+        .pipe(imagemin({
+            verbose: true
+        }))
+        .pipe(gulp.dest('dist/img'));
+});
+</pre>
+4. Amend task to exclude sprites folder

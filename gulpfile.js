@@ -16,7 +16,8 @@ var gulp = require('gulp'),
     inlineCss = require('gulp-inline-css'),
     minifyJS = require('gulp-uglify'),
     concatJS = require('gulp-concat'),
-    jshint = require('gulp-jshint');
+    jshint = require('gulp-jshint'),
+    imagemin = require('gulp-imagemin');
 
 /* =======================
 Regular tasks
@@ -113,6 +114,16 @@ gulp.task('lint-js', function() {
         .pipe(jshint.reporter('fail')); //task fails on JSHINT error
 });
 
+// COmpresses images
+gulp.task('img', function() {
+    return gulp
+        .src(['src/img/**/*.{png,jpg,JPG,gif,svg,ico}', '!src/img/sprites/**'])
+        .pipe(imagemin({
+            verbose: true
+        }))
+        .pipe(gulp.dest('dist/img'));
+
+});
 /* =======================
 Watch tasks
 ======================= */
@@ -132,5 +143,5 @@ gulp.task('watch-js', ['js'], function(done) {
 The main task
 ======================= */
 
-gulp.task('default', ['html', 'sass', 'js', 'server']); 
+gulp.task('default', ['html', 'sass', 'js', 'img', 'server']); 
  
