@@ -92,7 +92,7 @@ gulp.task('sass', function() {
 // 2. add all js files together and make a single file called scripts.js
 // 3. minify js
 // 4. put minified js in dist js folder. 
-gulp.task('js', ['lint-js'], function() {
+gulp.task('js', function() {
     return gulp
         .src('src/js/lib/**/*.js')
         .pipe(concatJS('scripts.js'))

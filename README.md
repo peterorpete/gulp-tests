@@ -328,3 +328,12 @@ gulp.task('img', function() {
 });
 </pre>
 4. Amend task to exclude sprites folder
+
+
+## How to Run Tasks in Sequence (Not Parallel)
+
+1. **npm install run-sequence --save-dev**
+2. Load plugin
+<pre>
+    sequence = require('run-sequence');
+</pre>
