@@ -337,3 +337,57 @@ gulp.task('img', function() {
 <pre>
     sequence = require('run-sequence');
 </pre>
+
+## How to rename and delete files
+
+1. **npm i gulp-rename gulp-clean --save-dev**
+2. load plugins
+<pre>
+    clean = require('gulp-clean'),
+    rename = require('gulp-rename');
+</pre>
+3. Create a task that will delete the dist folder so the build can start afresh.
+4. Amend the default task to have reset as first procress
+<pre>
+// 1. launch default
+// 2. run reset, then html and then sass and js in parallel, then run server once others finished
+gulp.task('default', function(cb) {
+    sequence('reset', 'html', ['sass', 'js'], 'server', cb); 
+}); 
+</pre>
+
+## How to handle errors in gulp
+
+1. **npm i gulp-plumber gulp-notify --save-dev**
+2. load plugins
+<pre>
+    plumber = require('gulp-plumber'),
+    notify = require('gulp-notify');
+</pre>
+3. Create task
+<pre>
+// Compiles sass to css
+// 1. gets all scss from scss folder
+// 2. Displays error message
+// 3. Pushes it through sass plugin to css
+// 4. USes autoprefixer to change css to work in unsupported browsers
+// 5. Puts the created css in dist/css folder
+// 6. Browser-sync reload
+gulp.task('sass', function() {
+    return gulp
+        .src('src/scss/**/*.scss')
+        .pipe(plumber({
+            errorHandler: notify.onError({
+                title: 'Gulp error in the <%= error.plugin%>',
+                message: '<%= error.message %>'
+            })
+        }))
+        .pipe(sass({
+            outputStyle: 'nested' 
+            //expanded, nested, compact, compressed,
+        }))
+        .pipe(autoprefixer(['last 2 versions', 'ie 6-8']))
+        .pipe(gulp.dest('dist/css'))
+        .pipe(browser.stream());  //browsersync reloads
+});
+</pre>

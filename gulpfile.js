@@ -17,7 +17,12 @@ var gulp = require('gulp'),
     minifyJS = require('gulp-uglify'),
     concatJS = require('gulp-concat'),
     jshint = require('gulp-jshint'),
-    imagemin = require('gulp-imagemin');
+    imagemin = require('gulp-imagemin'),
+    sequence = require('run-sequence'),
+    clean = require('gulp-clean'),
+    rename = require('gulp-rename'),
+    plumber = require('gulp-plumber'),
+    notify = require('gulp-notify');
 
 /* =======================
 Regular tasks
@@ -57,13 +62,20 @@ gulp.task('html', function() {
 
 // Compiles sass to css
 // 1. gets all scss from scss folder
-// 2. Pushes it through sass plugin to css
-// 3. USes autoprefixer to change css to work in unsupported browsers
-// 4. Puts the created css in dist/css folder
-// 5. Browser-sync reload
+// 2. Displays error message
+// 3. Pushes it through sass plugin to css
+// 4. USes autoprefixer to change css to work in unsupported browsers
+// 5. Puts the created css in dist/css folder
+// 6. Browser-sync reload
 gulp.task('sass', function() {
     return gulp
         .src('src/scss/**/*.scss')
+        .pipe(plumber({
+            errorHandler: notify.onError({
+                title: 'Gulp error in the <%= error.plugin%>',
+                message: '<%= error.message %>'
+            })
+        }))
         .pipe(sass({
             outputStyle: 'nested' 
             //expanded, nested, compact, compressed,
@@ -73,30 +85,21 @@ gulp.task('sass', function() {
         .pipe(browser.stream());  //browsersync reloads
 });
 
-// Inlines css
-// gulp.task('inlineCss', ['sass'], function() {
-//     return gulp
-//         .src('src/*.html')
-//         .pipe(inlineCss(
-//             {
-//                 applyLinkTags: true
-
-//              }
-//         ))
-//         .pipe(gulp.dest('dist'))
-//         .pipe(browser.stream());  //browsersync reloads
-// });
 
 // Concatenate and minify JS.
 // 1. grab all js files in every sub folder
 // 2. add all js files together and make a single file called scripts.js
 // 3. minify js
-// 4. put minified js in dist js folder. 
+// 4. rename the new minified code to scripts.min.js
+// 5. put new minified js file in dist js folder.
+// 6. SHould create two files
 gulp.task('js', function() {
     return gulp
         .src('src/js/lib/**/*.js')
         .pipe(concatJS('scripts.js'))
+        .pipe(gulp.dest('dist/js'))
         .pipe(minifyJS())
+        .pipe(rename('scripts.min.js'))
         .pipe(gulp.dest('dist/js'));
 
 });
@@ -124,6 +127,12 @@ gulp.task('img', function() {
         .pipe(gulp.dest('dist/img'));
 
 });
+
+gulp.task('reset', function() {
+    return gulp
+        .src('dist')
+        .pipe(clean());
+})
 /* =======================
 Watch tasks
 ======================= */
@@ -143,5 +152,9 @@ gulp.task('watch-js', ['js'], function(done) {
 The main task
 ======================= */
 
-gulp.task('default', ['html', 'sass', 'js', 'img', 'server']); 
- 
+// 1. laucnh default
+// 2. run reset, then html and then sass and js in parallel, then run server once others finished
+gulp.task('default', function(cb) {
+    sequence('reset', 'html', ['sass', 'js'], 'server', cb); 
+}); 
+
